@@ -21,6 +21,7 @@ async function run() {
         await client.connect();
         const database = client.db("mr_mail");
         const serviceCollection = database.collection("services");
+        const bookingCollection = database.collection("booking");
 
         // get all the services from database
         app.get('/service', async (req, res) => {
@@ -36,6 +37,34 @@ async function run() {
             const result = await serviceCollection.findOne(query);
             res.json(result)
         })
+
+        // save booking to database api
+        app.post('/booking', async (req, res) => {
+            const booking = req.body;
+            const result = await bookingCollection.insertOne(booking);
+            res.json(result);
+        })
+
+        // get all bookings
+        app.get('/booking', async (req, res) => {
+            const cursor = bookingCollection.find({});
+            const page = req.query.page;
+            const size = parseInt(req.query.size);
+            let results;
+            const count = await cursor.count();
+
+            if (page) {
+                results = await cursor.skip(page * size).limit(size).toArray();
+            }
+            else {
+                results = await cursor.toArray();
+            }
+            res.send({
+                count,
+                results
+            });
+        })
+
 
     } finally {
         // await client.close();
