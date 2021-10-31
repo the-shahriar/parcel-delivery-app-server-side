@@ -96,6 +96,22 @@ async function run() {
             res.json(result);
         })
 
+        // update a booking status
+        app.put('/booking/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedValue = req.body;
+            const query = { _id: ObjectId(id) };
+
+            const updateDoc = {
+                $set: {
+                    status: updatedValue.status
+                }
+            }
+
+            const result = await bookingCollection.updateOne(query, updateDoc);
+            res.json(result);
+        })
+
     } finally {
         // await client.close();
     }
