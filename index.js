@@ -23,6 +23,10 @@ async function run() {
         const serviceCollection = database.collection("services");
         const bookingCollection = database.collection("booking");
 
+
+        /* Service related API */
+
+
         // get all the services from database
         app.get('/service', async (req, res) => {
             const cursor = serviceCollection.find({});
@@ -37,6 +41,17 @@ async function run() {
             const result = await serviceCollection.findOne(query);
             res.json(result)
         })
+
+        // add service to db api
+        app.post('/service', async (req, res) => {
+            const service = req.body;
+            const result = await serviceCollection.insertOne(service);
+            res.json(result);
+        })
+
+
+        /* Booking related API */
+
 
         // save booking to database api
         app.post('/booking', async (req, res) => {
@@ -80,7 +95,6 @@ async function run() {
             const result = await bookingCollection.deleteOne(query);
             res.json(result);
         })
-
 
     } finally {
         // await client.close();
